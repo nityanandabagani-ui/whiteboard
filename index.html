@@ -7,22 +7,21 @@
 <link rel="manifest" href="manifest.json">
 <title>নোটিফিকেশন বোর্ড</title>
 <style>
-:root{--bg:#f1f3f6;--panel:#fff;--tx:#1d2330;--bd:#d8dce4;--ac:#2563eb;box-sizing:border-box;padding:env(safe-area-inset-top,0px) env(safe-area-inset-right,0px) env(safe-area-inset-bottom,0px) env(safe-area-inset-left,0px)}
+:root{--bg:#f1f3f6;--panel:#fff;--tx:#1d2330;--bd:#d8dce4;--ac:#2563eb;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#14171d;--panel:#1f242d;--tx:#e8ebf0;--bd:#343b48;--ac:#5b8cff}}
 :root[data-theme="dark"]{--bg:#14171d;--panel:#1f242d;--tx:#e8ebf0;--bd:#343b48;--ac:#5b8cff}
 *{box-sizing:border-box}
 html,body{height:100%;margin:0}
-body{height:100dvh}
-body{background:var(--bg);color:var(--tx);font-family:"Hind Siliguri","Noto Sans Bengali",system-ui,sans-serif;display:flex;gap:4px;padding:4px;overflow:hidden}
-#tools{width:132px;flex:none;background:var(--panel);border:1px solid var(--bd);border-radius:14px;padding:6px;display:grid;grid-template-columns:1fr 1fr;gap:5px;align-content:start;overflow-y:auto}
+body{background:var(--bg);color:var(--tx);font-family:"Hind Siliguri","Noto Sans Bengali",system-ui,sans-serif;display:flex;gap:8px;padding:8px;overflow:hidden}
+#tools{width:156px;flex:none;background:var(--panel);border:1px solid var(--bd);border-radius:14px;padding:6px;display:grid;grid-template-columns:1fr 1fr;gap:5px;align-content:start;overflow-y:auto}
 .f{grid-column:1/-1}
 #main{flex:1;min-width:0;display:flex;align-items:center;justify-content:center}
-#box{width:100%;max-width:calc((100dvh - 8px)*16/9);aspect-ratio:16/9;background:#fff;border:1px solid var(--bd);border-radius:8px;overflow:hidden;position:relative;box-shadow:0 4px 18px rgba(0,0,0,.12)}
+#box{width:100%;max-width:calc((100vh - 24px)*16/9);aspect-ratio:16/9;background:#fff;border:2px solid var(--bd);border-radius:10px;overflow:hidden;position:relative;box-shadow:0 4px 18px rgba(0,0,0,.12)}
 canvas{width:100%;height:100%;display:block;touch-action:none}
 button,label.b{font:inherit;font-size:12px;border:1px solid var(--bd);background:var(--panel);color:var(--tx);border-radius:9px;padding:7px 2px;cursor:pointer;text-align:center;display:block;margin:0}
 button:hover,label.b:hover{border-color:var(--ac)}
 button.on{background:var(--ac);color:#fff;border-color:var(--ac)}
-#up{background:var(--ac);color:#fff;border-color:var(--ac);padding:10px 2px;font-size:13px}
+#up{background:var(--ac);color:#fff;border-color:var(--ac)}
 #rec.on{background:#dc2626;border-color:#dc2626}
 .cols{display:grid;grid-template-columns:repeat(4,1fr);gap:5px}
 .cols i{height:24px;border-radius:50%;border:2px solid var(--bd);cursor:pointer}
@@ -34,14 +33,19 @@ input[type=range]{width:100%;margin:2px 0}
 #modal div{background:var(--panel);padding:12px;border-radius:12px;width:min(560px,92vw);display:grid;gap:8px}
 #modal video{width:100%;border-radius:8px;background:#000}
 #modal .r{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-@media (max-width:700px) and (orientation:portrait){body{flex-direction:column-reverse}#tools{width:100%;max-height:42vh}#box{max-width:100%}}
+@media (orientation:portrait){body{flex-direction:column-reverse}#main{flex:none;width:100%;align-items:flex-start}#box{max-width:100%}#tools{width:100%;flex:1;min-height:0;grid-template-columns:repeat(4,1fr)}#up,#np,#rec,#mic,#clr,#nb{grid-column:span 2}button,label.b{font-size:11px;padding:7px 1px}}
 </style>
 </head>
 <body>
 <div id="tools">
-<label class="b f" id="up">📂 PDF / ছবি আপলোড<input id="file" type="file" accept="image/*,application/pdf" multiple hidden></label>
+<label class="b" id="up">📂 আপলোড<input id="file" type="file" accept="image/*,application/pdf" multiple hidden></label>
+<button id="np">➕ নতুন পাতা</button>
 <button data-t="pen" class="on">✏️ কলম</button>
 <button data-t="eraser">🧽 রাবার</button>
+<button data-t="hand">✋ সরান</button>
+<button id="zr">১০০%</button>
+<button id="zi">➕ জুম</button>
+<button id="zo">➖ জুম</button>
 <input class="f" id="size" type="range" min="2" max="24" value="5" title="কলম মোটা-চিকন">
 <button id="rec">⏺ রেকর্ড</button>
 <button id="mic">🎤 মাইক বন্ধ</button>
@@ -53,13 +57,9 @@ input[type=range]{width:100%;margin:2px 0}
 <button data-t="circle">◯ গোল</button>
 <button data-t="triangle">△ ত্রিভুজ</button>
 <button data-t="line">╱ রেখা</button>
-<button data-t="hand">✋ সরান</button>
-<button id="zr">১০০%</button>
-<button id="zi">➕ জুম</button>
-<button id="zo">➖ জুম</button>
 <button id="clr">🧹 পাতা মুছুন</button>
 <button id="nb">🆕 নতুন বোর্ড</button>
-<button id="fs" class="f">⛶ পূর্ণস্ক্রিন</button>
+<button id="pdfb" class="f">📄 পিডিএফ সেভ করুন</button>
 </div>
 <div id="main"><div id="box"><canvas id="c" width="1920" height="1080"></canvas><div id="hint">উপরের বোতাম থেকে PDF বা ছবি আপলোড করুন, অথবা সরাসরি লিখুন</div></div></div>
 <div id="modal"><div><video id="pv" controls playsinline></video><div class="r"><button id="mdl">⬇ ডাউনলোড</button><button id="mcl">বন্ধ করুন</button></div></div></div>
@@ -94,16 +94,19 @@ function path(c,a){
  else if(a.t==='line'){c.moveTo(x0,y0);c.lineTo(x1,y1)}
  c.stroke();
 }
+function drawPage(c,l,p,all,S,v){
+ c.setTransform(1,0,0,1,0,0);c.fillStyle='#fff';c.fillRect(0,0,W*S,H*S);
+ const T=[S*v.z,0,0,S*v.z,S*v.x,S*v.y];c.setTransform(...T);
+ const bg=p.bg;
+ if(bg){const k=Math.min(W/bg.w,H/bg.h),dw=bg.w*k,dh=bg.h*k;c.drawImage(bg.src,(W-dw)/2,(H-dh)/2,dw,dh)}
+ l.setTransform(1,0,0,1,0,0);l.clearRect(0,0,W*S,H*S);l.setTransform(...T);
+ for(const a of all)path(l,a);
+ c.setTransform(1,0,0,1,0,0);c.drawImage(l.canvas,0,0);
+}
 function render(){
  const p=P(),all=cur?[...p.acts,cur]:p.acts;
- ctx.setTransform(1,0,0,1,0,0);ctx.fillStyle='#fff';ctx.fillRect(0,0,W,H);
- ctx.setTransform(view.z,0,0,view.z,view.x,view.y);
- const bg=p.bg;
- if(bg){const s=Math.min(W/bg.w,H/bg.h),dw=bg.w*s,dh=bg.h*s;ctx.drawImage(bg.src,(W-dw)/2,(H-dh)/2,dw,dh)}
- lc.setTransform(1,0,0,1,0,0);lc.clearRect(0,0,W,H);lc.setTransform(view.z,0,0,view.z,view.x,view.y);
- for(const a of all)path(lc,a);
- ctx.setTransform(1,0,0,1,0,0);ctx.drawImage(layer,0,0);
- $('hint').style.display=(bg||all.length||pages.length>1||p.load)?'none':'flex';
+ drawPage(ctx,lc,p,all,1,view);
+ $('hint').style.display=(p.bg||all.length||pages.length>1||p.load)?'none':'flex';
 }
 function pt(e){const r=cv.getBoundingClientRect(),k=W/r.width,sx=(e.clientX-r.left)*k,sy=(e.clientY-r.top)*k;return{sx,sy,x:(sx-view.x)/view.z,y:(sy-view.y)/view.z}}
 cv.addEventListener('pointerdown',e=>{
@@ -136,7 +139,7 @@ $('nb').onclick=()=>{if(confirm('সব পাতা মুছে সম্প�
 
 function updPg(){$('pg').style.display=pages.length>1?'grid':'none';$('pn').textContent=(pi+1)+' / '+pages.length}
 async function showPage(i){
- if(i<0||i>=pages.length)return;pi=i;const p=P();cur=null;view={z:1,x:0,y:0};updPg();
+ if(i<0||i>=pages.length)return;pi=i;const p=P();cur=null;updPg();
  if(!p.bg&&p.load){render();try{await p.load()}catch(e){console.error(e)}}
  if(pages[pi]===p)render();
 }
@@ -189,11 +192,41 @@ $('rec').onclick=async()=>{
 $('mdl').onclick=()=>last&&save(last.blob,last.name);
 $('mcl').onclick=()=>{$('modal').style.display='none';$('pv').pause()};
 
+$('np').onclick=()=>{pages.splice(pi+1,0,blank());showPage(pi+1)};
+
+async function makePDF(){
+ const S=2,imgs=[],c=document.createElement('canvas'),l=document.createElement('canvas');
+ c.width=l.width=W*S;c.height=l.height=H*S;const cc=c.getContext('2d'),ll=l.getContext('2d');
+ for(const p of pages){
+  if(!p.bg&&p.load)await p.load();
+  drawPage(cc,ll,p,p.acts,S,{z:1,x:0,y:0});
+  const b=atob(c.toDataURL('image/jpeg',0.9).split(',')[1]),u=new Uint8Array(b.length);
+  for(let i=0;i<b.length;i++)u[i]=b.charCodeAt(i);imgs.push(u);
+ }
+ const enc=new TextEncoder(),parts=[],offs=[];let len=0;
+ const add=b=>{if(typeof b==='string')b=enc.encode(b);parts.push(b);len+=b.length};
+ const obj=(i,t)=>{offs[i]=len;add(i+' 0 obj\n'+t+'\nendobj\n')};
+ const n=imgs.length;add('%PDF-1.4\n');
+ obj(1,'<</Type/Catalog/Pages 2 0 R>>');
+ obj(2,'<</Type/Pages/Kids ['+imgs.map((_,k)=>(3+k*3)+' 0 R').join(' ')+']/Count '+n+'>>');
+ imgs.forEach((im,k)=>{const pg=3+k*3,ct=pg+1,ig=pg+2,cs='q 960 0 0 540 0 0 cm /Im0 Do Q';
+  obj(pg,'<</Type/Page/Parent 2 0 R/MediaBox[0 0 960 540]/Contents '+ct+' 0 R/Resources<</XObject<</Im0 '+ig+' 0 R>>>>>>');
+  obj(ct,'<</Length '+cs.length+'>>\nstream\n'+cs+'\nendstream');
+  offs[ig]=len;add(ig+' 0 obj\n<</Type/XObject/Subtype/Image/Width '+c.width+'/Height '+c.height+'/ColorSpace/DeviceRGB/BitsPerComponent 8/Filter/DCTDecode/Length '+im.length+'>>\nstream\n');add(im);add('\nendstream\nendobj\n');
+ });
+ const total=3*n+3,xr=len;let x='xref\n0 '+total+'\n0000000000 65535 f \n';
+ for(let i=1;i<total;i++)x+=String(offs[i]).padStart(10,'0')+' 00000 n \n';
+ add(x+'trailer\n<</Size '+total+'/Root 1 0 R>>\nstartxref\n'+xr+'\n%%EOF');
+ return new Blob(parts,{type:'application/pdf'});
+}
+$('pdfb').onclick=async()=>{
+ const b=$('pdfb');b.textContent='⏳ তৈরি হচ্ছে...';b.disabled=true;
+ try{await save(await makePDF(),'board-'+Date.now()+'.pdf')}catch(e){alert('পিডিএফ তৈরি হয়নি');console.error(e)}
+ b.textContent='📄 পিডিএফ সেভ করুন';b.disabled=false;
+};
+
 try{if('serviceWorker' in navigator&&location.protocol==='https:')navigator.serviceWorker.register('sw.js').catch(()=>{})}catch(e){}
 setTool('pen');render();
-
-try{const fsb=document.getElementById('fs');fsb.onclick=()=>{const d=document,e=d.documentElement;if(d.fullscreenElement){d.exitFullscreen()}else if(e.requestFullscreen){e.requestFullscreen().then(()=>{try{screen.orientation.lock('landscape').catch(()=>{})}catch(x){}}).catch(()=>{})}};if(matchMedia('(display-mode: fullscreen)').matches||matchMedia('(display-mode: standalone)').matches)fsb.style.display='none'}catch(e){}
-try{const L=()=>{try{screen.orientation.lock('landscape').catch(()=>{})}catch(x){}};L();addEventListener('pointerdown',L,{once:true})}catch(e){}
 </script>
 </body>
 </html>
